@@ -18,22 +18,25 @@ s3_bucket_name = "test-bucket-lambda-trigger-1"
 lambda_container_name = "lambda_container"
 lambda_sqs_checker_creator_name = "lambda_sqs_checker_creator"
 lambda_training_name = "lambda_training"
+account_id = props["ACCOUNT_ID"]
+region = props["REGION"]
 
 IAM = IAMRoles(
         app,
         construct_id="Hephaestus-IAM-Roles",
-        env={'account':props["ACCOUNT_ID"], "region": props["REGION"]},
+        env={'account':account_id, "region": region},
         stack_name="hephaestus-IAM-Roles",
         lambda_container_name=lambda_container_name,
         lambda_sqs_checker_creator_name=lambda_sqs_checker_creator_name,
         lambda_training_name=lambda_training_name,
-        s3_bucket_name=s3_bucket_name
+        s3_bucket_name=s3_bucket_name,
+        account_id=account_id
     )
 
 S3_Bucket = S3(
         app,
         construct_id="Hephaestus-S3",
-        env={'account':props["ACCOUNT_ID"], "region": props["REGION"]},
+        env={'account':account_id, "region": region},
         stack_name="Hephaestus-S3",
         s3_bucket_name=s3_bucket_name
     )
@@ -41,14 +44,15 @@ S3_Bucket = S3(
 sqs_data = SQS(
         app,
         construct_id="Hephaestus-SQS",
-        env={'account':props["ACCOUNT_ID"], "region": props["REGION"]},
-        stack_name="Hephaestus-SQS"
+        env={'account':account_id, "region": region},
+        stack_name="Hephaestus-SQS",
+        account_id=account_id
     )
 
 actual_lambda = Lambdas(
         app,
         construct_id="Hephaestus-Lambda",
-        env={'account':props["ACCOUNT_ID"], "region": props["REGION"]},
+        env={'account':account_id, "region": region},
         stack_name="Hephaestus-Lambda",
         
         # IAM Execution Roles
@@ -67,7 +71,7 @@ actual_lambda = Lambdas(
 LambdaEventSources = LambdaEventSources(
         app,
         construct_id="LambdaEventSources",
-        env={'account':props["ACCOUNT_ID"], "region": props["REGION"]},
+        env={'account':account_id, "region": region},
         stack_name="LambdaEventSources",
         actual_sqs=sqs_data.actual_sqs,
         lambda_container=actual_lambda.lambda_container,
@@ -79,7 +83,7 @@ LambdaEventSources = LambdaEventSources(
 ApiGateway(
         app,
         construct_id="Hephaestus-ApiGateway",
-        env={'account':props["ACCOUNT_ID"], "region": props["REGION"]},
+        env={'account':account_id, "region": region},
         stack_name="hephaestus-apigateway",
         iam_cloud_watch_role=IAM.cloud_watch_role,
         lambda_sqs_checker_creator_name=actual_lambda.lambda_sqs_checker_creator_name

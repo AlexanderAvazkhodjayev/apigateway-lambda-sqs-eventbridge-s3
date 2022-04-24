@@ -1,14 +1,12 @@
 from aws_cdk import (
-    # Duration,
-    CfnOutput,
     Stack,
     aws_iam
-    # aws_sqs as sqs,
 )
 from constructs import Construct
 
-class IAMRoles(Stack):
 
+class IAMRoles(Stack):
+    
     def __init__(self, 
                  scope: Construct, 
                  construct_id: str,
@@ -16,10 +14,11 @@ class IAMRoles(Stack):
                  lambda_sqs_checker_creator_name, 
                  lambda_training_name,
                  s3_bucket_name,
+                 account_id,
                  **kwargs) -> None:
         
         super().__init__(scope, construct_id, **kwargs)
-        
+       
         cloud_watch_role = aws_iam.Role(
             self, 
             id="Cloud-Watch-Role",
@@ -59,11 +58,11 @@ class IAMRoles(Stack):
                         statements=[
                             aws_iam.PolicyStatement(
                                 actions=["logs:CreateLogGroup"],
-                                resources=["arn:aws:logs:us-east-1:139988404192:*"]
+                                resources=["arn:aws:logs:us-east-1:"+account_id+":*"]
                             ),
                             aws_iam.PolicyStatement(
                                 actions=["logs:CreateLogStream","logs:PutLogEvents"],
-                                resources=["arn:aws:logs:us-east-1:139988404192:log-group:/aws/lambda/"+lambda_container_name+":*"]
+                                resources=["arn:aws:logs:us-east-1:"+account_id+":log-group:/aws/lambda/"+lambda_container_name+":*"]
                             )
                         ]
                     ),
@@ -92,11 +91,11 @@ class IAMRoles(Stack):
                         statements=[
                             aws_iam.PolicyStatement(
                                 actions=["logs:CreateLogGroup"],
-                                resources=["arn:aws:logs:us-east-1:139988404192:*"]
+                                resources=["arn:aws:logs:us-east-1:"+account_id+":*"]
                             ),
                             aws_iam.PolicyStatement(
                                 actions=["logs:CreateLogStream","logs:PutLogEvents"],
-                                resources=["arn:aws:logs:us-east-1:139988404192:log-group:/aws/lambda/"+lambda_sqs_checker_creator_name+":*"]
+                                resources=["arn:aws:logs:us-east-1:"+account_id+":log-group:/aws/lambda/"+lambda_sqs_checker_creator_name+":*"]
                             )
                         ]
                     ),
@@ -105,7 +104,7 @@ class IAMRoles(Stack):
                         statements=[
                             aws_iam.PolicyStatement(
                                 actions=["sqs:SendMessage","sqs:GetQueueUrl"],
-                                resources=["arn:aws:sqs:us-east-1:139988404192:*"]
+                                resources=["arn:aws:sqs:us-east-1:"+account_id+":*"]
                             )
                         ]
                     )
@@ -125,11 +124,11 @@ class IAMRoles(Stack):
                         statements=[
                             aws_iam.PolicyStatement(
                                 actions=["logs:CreateLogGroup"],
-                                resources=["arn:aws:logs:us-east-1:139988404192:*"]
+                                resources=["arn:aws:logs:us-east-1:"+account_id+":*"]
                             ),
                             aws_iam.PolicyStatement(
                                 actions=["logs:CreateLogStream","logs:PutLogEvents"],
-                                resources=["arn:aws:logs:us-east-1:139988404192:log-group:/aws/lambda/"+lambda_training_name+":*"]
+                                resources=["arn:aws:logs:us-east-1:"+account_id+":log-group:/aws/lambda/"+lambda_training_name+":*"]
                             ),
                             
                         ]
